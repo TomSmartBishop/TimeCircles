@@ -16,6 +16,11 @@ The first thing to do is to include the JavaScript files for jQuery and TimeCirc
 When the necessary files have been included, it's very simple to set up TimeCircles on your page, simply target the element you wish to use with jQuery, and execute the TimeCircles function on it. This will create TimeCircles inside the targeted element, counting up from 0 (when the page was opened).
 
 > **Important note:** TimeCircles will automatically make its self the size of whatever element you place it in. If you do not have a height set, it will attempt to determine a height based on the element's width. For the best results however, it's recommended to set both the width and height.
+In case you need to re-adjust the size because of a dynamic web page layout you can do something like the following:
+
+    $( window ).resize(function() {
+        $(".example").TimeCircles().rebuild();
+    });
 
 ### Setting your reference time
 

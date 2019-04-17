@@ -338,7 +338,7 @@
         }
     };
     
-    TC_Instance.prototype.initialize = function(clear_listeners) {
+    TC_Instance.prototype.initialize = function (clear_listeners, rebuild) {
         // Initialize drawn units
         this.data.drawn_units = [];
         for(var i = 0; i < Object.keys(this.config.time).length; i++) {
@@ -351,8 +351,12 @@
         // Avoid stacking
         $(this.element).children('div.time_circles').remove();
 
-        if (typeof clear_listeners === "undefined")
+        if (typeof clear_listeners === "undefined") {
             clear_listeners = true;
+        }
+        if (typeof rebuild === "undefined") {
+            rebuild = false;
+        }
         if (clear_listeners || this.listeners === null) {
             this.clearListeners();
         }
@@ -425,9 +429,19 @@
             this.data.text_elements[key] = numberElement;
         }
 
-        this.start();
-        if (!this.config.start) {
-            this.data.paused = true;
+        //we don't want to stop timers when rebuilding
+        if (rebuild) {
+            if (this.data.paused) {
+                this.start();
+                this.data.paused = true;
+            } else {
+                this.start();
+            }
+        } else {
+            this.start();
+            if (!this.config.start) {
+                this.data.paused = true;
+            }
         }
         
         // Set up interval fallback
@@ -620,6 +634,10 @@
             this.data.attributes.context.strokeStyle = this.config.circle_bg_color;
             this.data.attributes.context.stroke();
         }
+
+        //avoid flickering for very tiny arcs
+        if (pct<0.003)
+            return;
 
         // Direction
         var startAngle, endAngle, counterClockwise;
@@ -924,7 +942,7 @@
 
     TC_Class.prototype.rebuild = function() {
         this.foreach(function(instance) {
-            instance.initialize(false);
+            instance.initialize(false, true);
         });
         return this;
     };
